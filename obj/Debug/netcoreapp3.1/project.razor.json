@@ -14407,8 +14407,18 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "c:\\Users\\Vinicius\\Desktop\\Nova pasta\\Biblioteca2022\\Views\\Usuario\\RegistrarUsuarios.cshtml",
+      "TargetPath": "Views\\Usuario\\RegistrarUsuarios.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "c:\\Users\\Vinicius\\Desktop\\Nova pasta\\Biblioteca2022\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
       "TargetPath": "Views\\Shared\\_ValidationScriptsPartial.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\Users\\Vinicius\\Desktop\\Nova pasta\\Biblioteca2022\\Views\\Usuario\\ListaDeUsuarios.cshtml",
+      "TargetPath": "Views\\Usuario\\ListaDeUsuarios.cshtml",
       "FileKind": "mvc"
     },
     {
@@ -14419,6 +14429,16 @@
     {
       "FilePath": "c:\\Users\\Vinicius\\Desktop\\Nova pasta\\Biblioteca2022\\Views\\Emprestimo\\Cadastro.cshtml",
       "TargetPath": "Views\\Emprestimo\\Cadastro.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\Users\\Vinicius\\Desktop\\Nova pasta\\Biblioteca2022\\Views\\Usuario\\EditarUsuario.cshtml",
+      "TargetPath": "Views\\Usuario\\EditarUsuario.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\Users\\Vinicius\\Desktop\\Nova pasta\\Biblioteca2022\\Views\\Usuario\\NeedAdmin.cshtml",
+      "TargetPath": "Views\\Usuario\\NeedAdmin.cshtml",
       "FileKind": "mvc"
     },
     {
