@@ -1,22 +1,23 @@
 @model ICollection<Emprestimo>
 @{
     ViewData["Title"] = "Listagem de Empréstimos";
+    int PAGING = 10;
 }
 
 <div class="row">
     <div class="col-md-12">
-    <form class="form-inline" method="POST">
-        <div class="form-group mb-2">
-            <select name="TipoFiltro" class="form-control">
-                <option value="Usuario">Usuário</option>
-                <option value="Livro">Livro</option>
-            </select>
-        </div>
-        <div class="form-group mb-2 mx-sm-3">
-            <input type="text" placeholder="Filtro" name="Filtro" class="form-control" />
-        </div>
-        <button type="submit" class="btn btn-primary mb-2">Pesquisar</button>
-    </form>
+        <form class="form-inline" method="POST" asp-action="Listagem">
+            <div class="form-group mb-2">
+                <select name="TipoFiltro" class="form-control">
+                    <option value="Usuario">Usuário</option>
+                    <option value="Livro">Livro</option>
+                </select>
+            </div>
+            <div class="form-group mb-2 mx-sm-3">
+                <input type="text" placeholder="Filtro" name="Filtro" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary mb-2">Pesquisar</button>
+        </form>
     </div>
 </div>
 
@@ -24,39 +25,248 @@
     <div class="col-md-12">
         <table class="table table-striped">
             <thead>
-                <tr><th>Id</th>
-                <th>Usuario</th>
-                <th>Data Empréstimo</th>
-                <th>Data Devolução</th>
-                <th>Livro</th>
-                <th>Autor</th>
-                <th></th>
+                <tr>
+                    <th>Id</th>
+                    <th>Usuario</th>
+                    <th>Data Empréstimo</th>
+                    <th>Data Devolução</th>
+                    <th>Livro</th>
+                    <th>Autor</th>
+                    <th></th>
                 </tr>
             </thead>
-             @if (Model.Count > 0)
+            @if (Model.Count > 0)
             {
-            <tbody>
-                @foreach(Emprestimo e in Model)
+                if (Model.Count < PAGING)
                 {
-                <tr>
-                    <td>@e.Id</td>
-                    <td>@e.NomeUsuario</td>
-                    <td>@e.DataEmprestimo.ToString("dd/MM/yyyy")</td>
-                    <td>@e.DataDevolucao.ToString("dd/MM/yyyy")</td>
-                    <td>@e.Livro.Titulo</td>
-                    <td>@e.Livro.Autor</td>
-                    <td><a href="/Emprestimo/Edicao/@e.Id">Editar</a></td>
-                </tr>
+                    <tbody>
+                        @foreach (Emprestimo e in Model)
+                        {
+                            if (e.DataDevolucao < DateTime.Today && !e.Devolvido)
+                            {
+                                <tr class="table-danger">
+                                    <td>@e.Id</td>
+                                    <td>@e.NomeUsuario</td>
+                                    <td>@e.DataEmprestimo.ToString("dd/MM/yyyy")</td>
+                                    <td>@e.DataDevolucao.ToString("dd/MM/yyyy")</td>
+                                    <td>@e.Livro.Titulo</td>
+                                    <td>@e.Livro.Autor</td>
+                                    <td><a href="/Emprestimo/Edicao/@e.Id">Editar</a></td>
+                                </tr>
+                            }
+                            else if (e.Devolvido)
+                            {
+                                <tr class="table-success">
+                                    <td>@e.Id</td>
+                                    <td>@e.NomeUsuario</td>
+                                    <td>@e.DataEmprestimo.ToString("dd/MM/yyyy")</td>
+                                    <td>@e.DataDevolucao.ToString("dd/MM/yyyy")</td>
+                                    <td>@e.Livro.Titulo</td>
+                                    <td>@e.Livro.Autor</td>
+                                    <td><a href="/Emprestimo/Edicao/@e.Id">Editar</a></td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>@e.Id</td>
+                                    <td>@e.NomeUsuario</td>
+                                    <td>@e.DataEmprestimo.ToString("dd/MM/yyyy")</td>
+                                    <td>@e.DataDevolucao.ToString("dd/MM/yyyy")</td>
+                                    <td>@e.Livro.Titulo</td>
+                                    <td>@e.Livro.Autor</td>
+                                    <td><a href="/Emprestimo/Edicao/@e.Id">Editar</a></td>
+                                </tr>
+                            }
+
+                        }
+                    </tbody>
                 }
-            </tbody>
-            }else{
-                <tbody>
-                    <tr>
-                        <td colspan="6"> Nenhum registro encontrado </td>
-                    </tr>
-                </tbody>
+                else
+                {
+                    int pages = Model.Count / PAGING + 1;
+
+                    for (int j = 0; j < pages; j++)
+                    {
+                        if (j == 0)
+                        {
+                            <tbody id="table-@j">
+                                @for (int i = 0; i < PAGING; i++)
+                                {
+                                    if (Model.ElementAt(i).DataDevolucao < DateTime.Today && !Model.ElementAt(i).Devolvido)
+                                    {
+                                        <tr class="table-danger">
+                                            <td>@Model.ElementAt(i).Id</td>
+                                            <td>@Model.ElementAt(i).NomeUsuario</td>
+                                            <td>@Model.ElementAt(i).DataEmprestimo.ToString("dd/MM/yyyy")</td>
+                                            <td>@Model.ElementAt(i).DataDevolucao.ToString("dd/MM/yyyy")</td>
+                                            <td>@Model.ElementAt(i).Livro.Titulo</td>
+                                            <td>@Model.ElementAt(i).Livro.Autor</td>
+                                            <td><a href="/Emprestimo/Edicao/@Model.ElementAt(i).Id">Editar</a></td>
+                                        </tr>
+                                    }
+                                    else if (Model.ElementAt(i).Devolvido)
+                                    {
+                                        <tr class="table-success">
+                                            <td>@Model.ElementAt(i).Id</td>
+                                            <td>@Model.ElementAt(i).NomeUsuario</td>
+                                            <td>@Model.ElementAt(i).DataEmprestimo.ToString("dd/MM/yyyy")</td>
+                                            <td>@Model.ElementAt(i).DataDevolucao.ToString("dd/MM/yyyy")</td>
+                                            <td>@Model.ElementAt(i).Livro.Titulo</td>
+                                            <td>@Model.ElementAt(i).Livro.Autor</td>
+                                            <td><a href="/Emprestimo/Edicao/@Model.ElementAt(i).Id">Editar</a></td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td>@Model.ElementAt(i).Id</td>
+                                            <td>@Model.ElementAt(i).NomeUsuario</td>
+                                            <td>@Model.ElementAt(i).DataEmprestimo.ToString("dd/MM/yyyy")</td>
+                                            <td>@Model.ElementAt(i).DataDevolucao.ToString("dd/MM/yyyy")</td>
+                                            <td>@Model.ElementAt(i).Livro.Titulo</td>
+                                            <td>@Model.ElementAt(i).Livro.Autor</td>
+                                            <td><a href="/Emprestimo/Edicao/@Model.ElementAt(i).Id">Editar</a></td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+
+                        }
+                        else
+                        {
+                            if (j != pages - 1)
+                            {
+                                <tbody style="display: none;" id="table-@j">
+                                    @for (int i = 0 + j * PAGING; i < PAGING + j * PAGING; i++)
+                                    {
+                                        if (Model.ElementAt(i).DataDevolucao < DateTime.Today && !Model.ElementAt(i).Devolvido)
+                                        {
+                                            <tr class="table-danger">
+                                                <td>@Model.ElementAt(i).Id</td>
+                                                <td>@Model.ElementAt(i).NomeUsuario</td>
+                                                <td>@Model.ElementAt(i).DataEmprestimo.ToString("dd/MM/yyyy")</td>
+                                                <td>@Model.ElementAt(i).DataDevolucao.ToString("dd/MM/yyyy")</td>
+                                                <td>@Model.ElementAt(i).Livro.Titulo</td>
+                                                <td>@Model.ElementAt(i).Livro.Autor</td>
+                                                <td><a href="/Emprestimo/Edicao/@Model.ElementAt(i).Id">Editar</a></td>
+                                            </tr>
+                                        }
+                                        else if (Model.ElementAt(i).Devolvido)
+                                        {
+                                            <tr class="table-success">
+                                                <td>@Model.ElementAt(i).Id</td>
+                                                <td>@Model.ElementAt(i).NomeUsuario</td>
+                                                <td>@Model.ElementAt(i).DataEmprestimo.ToString("dd/MM/yyyy")</td>
+                                                <td>@Model.ElementAt(i).DataDevolucao.ToString("dd/MM/yyyy")</td>
+                                                <td>@Model.ElementAt(i).Livro.Titulo</td>
+                                                <td>@Model.ElementAt(i).Livro.Autor</td>
+                                                <td><a href="/Emprestimo/Edicao/@Model.ElementAt(i).Id">Editar</a></td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td>@Model.ElementAt(i).Id</td>
+                                                <td>@Model.ElementAt(i).NomeUsuario</td>
+                                                <td>@Model.ElementAt(i).DataEmprestimo.ToString("dd/MM/yyyy")</td>
+                                                <td>@Model.ElementAt(i).DataDevolucao.ToString("dd/MM/yyyy")</td>
+                                                <td>@Model.ElementAt(i).Livro.Titulo</td>
+                                                <td>@Model.ElementAt(i).Livro.Autor</td>
+                                                <td><a href="/Emprestimo/Edicao/@Model.ElementAt(i).Id">Editar</a></td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            }
+                            else
+                            {
+                                <tbody style="display: none;" id="table-@j">
+                                    @for (int i = 0 + j * PAGING; i < Model.Count; i++)
+                                    {
+                                        if (Model.ElementAt(i).DataDevolucao < DateTime.Today && !Model.ElementAt(i).Devolvido)
+                                        {
+                                            <tr class="table-danger">
+                                                <td>@Model.ElementAt(i).Id</td>
+                                                <td>@Model.ElementAt(i).NomeUsuario</td>
+                                                <td>@Model.ElementAt(i).DataEmprestimo.ToString("dd/MM/yyyy")</td>
+                                                <td>@Model.ElementAt(i).DataDevolucao.ToString("dd/MM/yyyy")</td>
+                                                <td>@Model.ElementAt(i).Livro.Titulo</td>
+                                                <td>@Model.ElementAt(i).Livro.Autor</td>
+                                                <td><a href="/Emprestimo/Edicao/@Model.ElementAt(i).Id">Editar</a></td>
+                                            </tr>
+                                        }
+                                        else if (Model.ElementAt(i).Devolvido)
+                                        {
+                                            <tr class="table-success">
+                                                <td>@Model.ElementAt(i).Id</td>
+                                                <td>@Model.ElementAt(i).NomeUsuario</td>
+                                                <td>@Model.ElementAt(i).DataEmprestimo.ToString("dd/MM/yyyy")</td>
+                                                <td>@Model.ElementAt(i).DataDevolucao.ToString("dd/MM/yyyy")</td>
+                                                <td>@Model.ElementAt(i).Livro.Titulo</td>
+                                                <td>@Model.ElementAt(i).Livro.Autor</td>
+                                                <td><a href="/Emprestimo/Edicao/@Model.ElementAt(i).Id">Editar</a></td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td>@Model.ElementAt(i).Id</td>
+                                                <td>@Model.ElementAt(i).NomeUsuario</td>
+                                                <td>@Model.ElementAt(i).DataEmprestimo.ToString("dd/MM/yyyy")</td>
+                                                <td>@Model.ElementAt(i).DataDevolucao.ToString("dd/MM/yyyy")</td>
+                                                <td>@Model.ElementAt(i).Livro.Titulo</td>
+                                                <td>@Model.ElementAt(i).Livro.Autor</td>
+                                                <td><a href="/Emprestimo/Edicao/@Model.ElementAt(i).Id">Editar</a></td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            else
+            {
+                <p class="text-danger">Nenhum registro encontrado.</p>
             }
         </table>
     </div>
 </div>
 
+@if (Model.Count > PAGING)
+{
+    int pages = Model.Count / PAGING + 1;
+    <input type="text" id="currentPage" style="display: none;" value="0" />
+    <input type="text" id="maxPage" style="display: none;" value="@(Model.Count/PAGING + 1)" />
+
+    <nav aria-label="Páginas da listagem de livros">
+        <ul class="pagination">
+            <li class="page-item disabled" id="prev" onclick="MudarPagina(-1)">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            @for (int i = 0; i < pages; i++)
+            {
+                if (i == 0)
+                {
+                    <li class="page-item active" onclick="Paginacao(@i)"><a class="page-link" href="#">@(i+1)</a></li>
+
+                }
+                else
+                {
+                    <li class="page-item" onclick="Paginacao(@i)"><a class="page-link" href="#">@(i+1)</a></li>
+                }
+            }
+            <li class="page-item" id="next" onclick="MudarPagina(1)">
+                <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+}
